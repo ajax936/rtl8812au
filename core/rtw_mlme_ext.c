@@ -3103,14 +3103,14 @@ unsigned int on_action_spct_ch_switch(_adapter *padapter, struct sta_info *psta,
 			FUNC_NDEV_ARG(padapter->pnetdev), MAC_ARG(psta->cmn.mac_addr));
 
 		for_each_ie(ie, ies, ies_len) {
-			if (ie->id == WLAN_EID_CHANNEL_SWITCH) {
-				ch_switch_mode = ie->data[0];
-				ch = ie->data[1];
-				ch_switch_cnt = ie->data[2];
+			if (ie->id == WLAN_EID_CHANNEL_SWITCH && ie->len >= 3) {
+				ch_switch_mode = ((const u8 *)ie)[2];
+				ch = ((const u8 *)ie)[3];
+				ch_switch_cnt = ((const u8 *)ie)[4];
 				RTW_INFO("ch_switch_mode:%d, ch:%d, ch_switch_cnt:%d\n",
 					 ch_switch_mode, ch, ch_switch_cnt);
-			} else if (ie->id == WLAN_EID_SECONDARY_CHANNEL_OFFSET) {
-				ch_offset = secondary_ch_offset_to_hal_ch_offset(ie->data[0]);
+			} else if (ie->id == WLAN_EID_SECONDARY_CHANNEL_OFFSET && ie->len >= 1) {
+				ch_offset = secondary_ch_offset_to_hal_ch_offset(((const u8 *)ie)[2]);
 				RTW_INFO("ch_offset:%d\n", ch_offset);
 			}
 		}
@@ -10087,7 +10087,7 @@ static int issue_action_ba(_adapter *padapter, unsigned char *raddr, unsigned ch
 	u16	start_seq;
 	u16	BA_para_set;
 	u16	BA_timeout_value;
-	u16	BA_starting_seqctrl;
+	u16	BA_starting_seqctrl = 0;
 	struct xmit_frame		*pmgntframe;
 	struct pkt_attrib		*pattrib;
 	u8					*pframe;
@@ -15243,7 +15243,7 @@ operation_by_state:
 
 #ifdef CONFIG_SCAN_BACKOP
 	case SCAN_BACKING_OP: {
-		u8 back_ch, back_bw, back_ch_offset;
+		u8 back_ch = 0, back_bw = 0, back_ch_offset = 0;
 		u8 need_ch_setting_union = _TRUE;
 
 #ifdef CONFIG_MCC_MODE

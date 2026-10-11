@@ -6538,7 +6538,7 @@ u8 GetHalDefVar8814A(PADAPTER padapter, HAL_DEF_VARIABLE variable, void *pval)
 			break;
 
 		case HAL_DEF_EXPLICIT_BEAMFORMER:
-			if (pHalData->rf_type != RF_1T2R || pHalData->rf_type != RF_1T1R)/*1T?R not support mer*/
+			if (pHalData->rf_type != RF_1T2R && pHalData->rf_type != RF_1T1R)/*1T?R not support mer*/
 				*((PBOOLEAN)pval) = _TRUE;
 			else
 				*((PBOOLEAN)pval) = _FALSE;

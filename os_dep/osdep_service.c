@@ -1888,7 +1888,7 @@ inline bool ATOMIC_INC_UNLESS(ATOMIC_T *v, int u)
 #endif
 }
 
-#ifdef PLATFORM_LINUX
+#if defined(PLATFORM_LINUX) && !defined(CONFIG_RTW_GKI)
 /*
 * Open a file with the specific @param path, @param flag, @param mode
 * @param fpp the pointer of struct file pointer to get struct file pointer while file opening is success
@@ -2114,13 +2114,13 @@ static int storeToFile(const char *path, u8 *buf, u32 sz)
 */
 int rtw_is_file_readable(const char *path)
 {
-#ifdef PLATFORM_LINUX
+#if defined(PLATFORM_LINUX) && !defined(CONFIG_RTW_GKI)
 	if (isFileReadable(path, NULL) == 0)
 		return _TRUE;
 	else
 		return _FALSE;
 #else
-	/* Todo... */
+	/* GKI omits direct file I/O; use embedded firmware and hardware EFUSE. */
 	return _FALSE;
 #endif
 }
@@ -2133,13 +2133,13 @@ int rtw_is_file_readable(const char *path)
 */
 int rtw_is_file_readable_with_size(const char *path, u32 *sz)
 {
-#ifdef PLATFORM_LINUX
+#if defined(PLATFORM_LINUX) && !defined(CONFIG_RTW_GKI)
 	if (isFileReadable(path, sz) == 0)
 		return _TRUE;
 	else
 		return _FALSE;
 #else
-	/* Todo... */
+	/* GKI omits direct file I/O; use embedded firmware and hardware EFUSE. */
 	return _FALSE;
 #endif
 }
@@ -2153,11 +2153,11 @@ int rtw_is_file_readable_with_size(const char *path, u32 *sz)
 */
 int rtw_retrieve_from_file(const char *path, u8 *buf, u32 sz)
 {
-#ifdef PLATFORM_LINUX
+#if defined(PLATFORM_LINUX) && !defined(CONFIG_RTW_GKI)
 	int ret = retriveFromFile(path, buf, sz);
 	return ret >= 0 ? ret : 0;
 #else
-	/* Todo... */
+	/* GKI omits direct file I/O; use embedded firmware and hardware EFUSE. */
 	return 0;
 #endif
 }
@@ -2171,11 +2171,11 @@ int rtw_retrieve_from_file(const char *path, u8 *buf, u32 sz)
 */
 int rtw_store_to_file(const char *path, u8 *buf, u32 sz)
 {
-#ifdef PLATFORM_LINUX
+#if defined(PLATFORM_LINUX) && !defined(CONFIG_RTW_GKI)
 	int ret = storeToFile(path, buf, sz);
 	return ret >= 0 ? ret : 0;
 #else
-	/* Todo... */
+	/* GKI omits direct file I/O; use embedded firmware and hardware EFUSE. */
 	return 0;
 #endif
 }

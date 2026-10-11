@@ -3118,26 +3118,28 @@ unsigned char check_assoc_AP(u8 *pframe, uint len)
 			} else if (_rtw_memcmp(pIE->data, REALTEK_OUI, 3)) {
 				u32	Vender = HT_IOT_PEER_REALTEK;
 
-				if (pIE->Length >= 5) {
-					if (pIE->data[4] == 1) {
-						/* if(pIE->data[5] & RT_HT_CAP_USE_LONG_PREAMBLE) */
+				if (pIE->Length >= 7) {
+					u8 ie_data[7];
+					_rtw_memcpy(ie_data, (const u8 *)pIE + 2, sizeof(ie_data));
+					if (ie_data[4] == 1) {
+						/* if(ie_data[5] & RT_HT_CAP_USE_LONG_PREAMBLE) */
 						/*	bssDesc->BssHT.RT2RT_HT_Mode |= RT_HT_CAP_USE_LONG_PREAMBLE; */
 
-						if (pIE->data[5] & RT_HT_CAP_USE_92SE) {
+						if (ie_data[5] & RT_HT_CAP_USE_92SE) {
 							/* bssDesc->BssHT.RT2RT_HT_Mode |= RT_HT_CAP_USE_92SE; */
 							Vender = HT_IOT_PEER_REALTEK_92SE;
 						}
 					}
 
-					if (pIE->data[5] & RT_HT_CAP_USE_SOFTAP)
+					if (ie_data[5] & RT_HT_CAP_USE_SOFTAP)
 						Vender = HT_IOT_PEER_REALTEK_SOFTAP;
 
-					if (pIE->data[4] == 2) {
-						if (pIE->data[6] & RT_HT_CAP_USE_JAGUAR_BCUT) {
+					if (ie_data[4] == 2) {
+						if (ie_data[6] & RT_HT_CAP_USE_JAGUAR_BCUT) {
 							Vender = HT_IOT_PEER_REALTEK_JAGUAR_BCUTAP;
 							RTW_INFO("link to Realtek JAGUAR_BCUTAP\n");
 						}
-						if (pIE->data[6] & RT_HT_CAP_USE_JAGUAR_CCUT) {
+						if (ie_data[6] & RT_HT_CAP_USE_JAGUAR_CCUT) {
 							Vender = HT_IOT_PEER_REALTEK_JAGUAR_CCUTAP;
 							RTW_INFO("link to Realtek JAGUAR_CCUTAP\n");
 						}

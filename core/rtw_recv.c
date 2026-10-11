@@ -3991,24 +3991,31 @@ static sint fill_radiotap_hdr(_adapter *padapter, union recv_frame *precvframe, 
 	u8 hdr_buf[64] = {0};
 	u16 rt_len = 8;
 	u32 tmp_32bit;
+	u8 rf_paths = pHalData->NumTotalRFPath;
 	int i;
+
+	/* Bound antenna metadata to the actual receive-power array. */
+	if (rf_paths > ARRAY_SIZE(pattrib->phy_info.rx_pwr))
+		return _FAIL;
 
 	/* create header */
 	rtap_hdr = (struct ieee80211_radiotap_header *)&hdr_buf[0];
 	rtap_hdr->it_version = PKTHDR_RADIOTAP_VERSION;
 
-	if(pHalData->NumTotalRFPath>0 && pattrib->physt) {
+	if(rf_paths>0 && pattrib->physt) {
 		rtap_hdr->it_present |=	(1<<IEEE80211_RADIOTAP_EXT) |
 			(1<<IEEE80211_RADIOTAP_RADIOTAP_NAMESPACE);
 
-		if(pHalData->NumTotalRFPath>1) {
+		if(rf_paths>1) {
 			tmp_32bit = (1<<IEEE80211_RADIOTAP_ANTENNA) |
 				(1<<IEEE80211_RADIOTAP_DBM_ANTSIGNAL) |
 				(1<<IEEE80211_RADIOTAP_EXT) |
 				(1<<IEEE80211_RADIOTAP_RADIOTAP_NAMESPACE);
 
-			for(i=0; i<pHalData->NumTotalRFPath-1; i++) {
-				memcpy(&hdr_buf[rt_len], &tmp_32bit, 4);
+			for(i=0; i<rf_paths-1; i++) {
+				if (rt_len > sizeof(hdr_buf) - sizeof(tmp_32bit))
+					return _FAIL;
+				memcpy(&hdr_buf[rt_len], &tmp_32bit, sizeof(tmp_32bit));
 				rt_len += 4;
 			}
 		}
@@ -4262,7 +4269,7 @@ static sint fill_radiotap_hdr(_adapter *padapter, union recv_frame *precvframe, 
 	}
 
 	if (pattrib->physt) {
-		for(i=0; i<pHalData->NumTotalRFPath; i++) {
+		for(i=0; i<rf_paths; i++) {
 			hdr_buf[rt_len] = pattrib->phy_info.rx_pwr[i];
 			rt_len ++;
 			hdr_buf[rt_len] = i;

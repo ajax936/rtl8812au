@@ -12,7 +12,7 @@ EXTRA_CFLAGS += -Wno-missing-prototypes
 #EXTRA_CFLAGS += -Wno-error=cast-function-type
 #EXTRA_CFLAGS += -Wno-parentheses-equality
 #EXTRA_CFLAGS += -Wno-error=incompatible-pointer-types
-EXTRA_CFLAGS += -Wno-stringop-overread
+# GCC-only flag: -Wno-stringop-overread
 #EXTRA_CFLAGS += -Wno-pointer-bool-conversion
 EXTRA_CFLAGS += -Wno-unknown-pragmas
 #EXTRA_CFLAGS += -Wno-unused
@@ -1823,3 +1823,8 @@ endif
 	@$(KSRC)/scripts/sign-file sha256 MOK.priv MOK.der 88XXau.ko
 
 sign-install: all sign install
+
+# Android GKI does not export filp_open to vendor modules.
+ifeq ($(CONFIG_RTW_GKI), y)
+EXTRA_CFLAGS += -DCONFIG_RTW_GKI
+endif

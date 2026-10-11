@@ -5586,6 +5586,7 @@ int proc_get_efuse_map(struct seq_file *m, void *v)
 	ips_mode = pwrctrlpriv->ips_mode;
 	rtw_pm_set_ips(padapter, IPS_NONE);
 
+#ifdef CONFIG_EFUSE_CONFIG_FILE
 	if (pHalData->efuse_file_status == EFUSE_FILE_LOADED) {
 		RTW_PRINT_SEL(m, "File eFuse Map loaded! file path:%s\nDriver eFuse Map From File\n", EFUSE_MAP_PATH);
 		if (pHalData->bautoload_fail_flag)
@@ -5594,7 +5595,9 @@ int proc_get_efuse_map(struct seq_file *m, void *v)
 		RTW_PRINT_SEL(m, "Open File eFuse Map Fail ! file path:%s\nDriver eFuse Map From Default\n", EFUSE_MAP_PATH);
 		if (pHalData->bautoload_fail_flag)
 			RTW_PRINT_SEL(m, "HW Autoload fail!!!\n");
-	} else {
+	} else
+#endif
+	{
 		RTW_PRINT_SEL(m, "Driver eFuse Map From HW\n");
 		if (pHalData->bautoload_fail_flag)
 			RTW_PRINT_SEL(m, "HW Autoload fail!!!\n");
@@ -5689,7 +5692,7 @@ ssize_t proc_set_tx_sa_query(struct file *file, const char __user *buffer, size_
 	_irqL	 irqL;
 	char tmp[16];
 	u8	mac_addr[NUM_STA][ETH_ALEN];
-	u32 key_type;
+	u32 key_type = 0;
 	u8 index;
 
 	if (count > 2) {
@@ -5769,7 +5772,7 @@ ssize_t proc_set_tx_deauth(struct file *file, const char __user *buffer, size_t 
 	char tmp[16];
 	u8	mac_addr[NUM_STA][ETH_ALEN];
 	u8 bc_addr[ETH_ALEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-	u32 key_type;
+	u32 key_type = 0;
 	u8 index;
 
 

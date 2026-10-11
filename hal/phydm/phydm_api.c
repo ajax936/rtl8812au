@@ -2713,7 +2713,7 @@ u8 config_phydm_read_txagc_n(void *dm_void, enum rf_path path, u8 hw_rate)
 
 		default:
 			PHYDM_DBG(dm, ODM_PHY_CONFIG, "Invalid HWrate!\n");
-			break;
+			return INVALID_TXAGC_DATA;
 		}
 	} else if (path == RF_PATH_B) {
 		switch (hw_rate) {
@@ -2835,10 +2835,11 @@ u8 config_phydm_read_txagc_n(void *dm_void, enum rf_path path, u8 hw_rate)
 
 		default:
 			PHYDM_DBG(dm, ODM_PHY_CONFIG, "Invalid HWrate!\n");
-			break;
+			return INVALID_TXAGC_DATA;
 		}
 	} else {
 		PHYDM_DBG(dm, ODM_PHY_CONFIG, "Invalid RF path!!\n");
+		return INVALID_TXAGC_DATA;
 	}
 	read_back_data = (u8)odm_get_bb_reg(dm, reg_txagc, reg_mask);
 	PHYDM_DBG(dm, ODM_PHY_CONFIG, "%s: path-%d rate index 0x%x = 0x%x\n",
